@@ -1,7 +1,37 @@
 'use client';
 
+// import { useEffect, useState } from 'react';
+// import { useSelector } from 'react-redux';
+
+// import BlogCard from '@/components/BlogCard';
+// import Footer from '@/components/Footer';
+// import MostLikedCard from '@/components/MostLikedCard';
+// import Navbar from '@/components/Navbar';
+// import NavbarLoggedIn from '@/components/NavbarLoggedIn';
+
+// import { fetchAPI } from '@/lib/api';
+// import { likePost } from '@/lib/post';
+// import { RootState } from '@/store/store';
+
+// interface Post {
+//   id: number;
+//   title: string;
+//   content: string;
+//   tags: string[];
+//   imageUrl: string;
+//   createdAt: string;
+//   likes: number;
+//   comments: number;
+//   author: {
+//     name: string;
+//     avatarUrl: string;
+//   };
+// }
+
+'use client';
+
+import { useSession } from 'next-auth/react'; 
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import BlogCard from '@/components/BlogCard';
 import Footer from '@/components/Footer';
@@ -11,7 +41,6 @@ import NavbarLoggedIn from '@/components/NavbarLoggedIn';
 
 import { fetchAPI } from '@/lib/api';
 import { likePost } from '@/lib/post';
-import { RootState } from '@/store/store';
 
 interface Post {
   id: number;
@@ -28,6 +57,7 @@ interface Post {
   };
 }
 
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [recommendedPosts, setRecommendedPosts] = useState<Post[]>([]);
@@ -35,7 +65,9 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
-  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+  // const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+const { data: session, status } = useSession();
+const isLoggedIn = status === 'authenticated';
 
   // ✅ Optimistic Like Handler
   const onLike = async (id: number) => {

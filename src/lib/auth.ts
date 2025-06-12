@@ -1,19 +1,9 @@
-// src/app/lib/auth.ts
+// src/lib/auth.ts
+import { LoginPayload, RegisterPayload, LoginResponse } from '@/types/auth';
 import { fetchAPI } from './api';
 
-export interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-export function login(payload: LoginPayload) {
-  return fetchAPI<{ token: string }>('auth/login', {
+export async function login(payload: LoginPayload): Promise<LoginResponse> {
+  return await fetchAPI<LoginResponse>('auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
   });

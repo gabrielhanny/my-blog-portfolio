@@ -3,14 +3,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useState } from 'react';
-
+import { useSession, signOut } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
 
 export default function WritePostPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  // Redirect kalau belum login
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+    }
+  }, [status, router]);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -18,6 +24,7 @@ export default function WritePostPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dropdown, setDropdown] = useState(false);
+  const [errors, setErrors] = useState({ title: false, content: false });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -27,12 +34,12 @@ export default function WritePostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) {
-      alert('Title and Content are required');
-      return;
-    }
 
-    if (!session?.user?.token) {
+    const hasError = !title.trim() || !content.trim();
+    setErrors({ title: !title.trim(), content: !content.trim() });
+    if (hasError) return;
+
+    if (!session) {
       alert('You must be logged in');
       return;
     }
@@ -49,7 +56,7 @@ export default function WritePostPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${session.user.token}`,
+          Authorization: `Bearer ${session.user.token}`, // ✅ gunakan token dari NextAuth session
         },
         body: formData,
       });
@@ -89,7 +96,7 @@ export default function WritePostPage() {
                 className='rounded-full'
               />
               <span className='text-sm font-medium text-neutral-900'>
-                {session?.user?.name}
+                {session?.user?.name || 'John Doe'}
               </span>
             </button>
 
@@ -108,10 +115,7 @@ export default function WritePostPage() {
                   Profile
                 </Link>
                 <button
-                  onClick={() => {
-                    document.cookie = 'token=; Max-Age=0';
-                    window.location.href = '/login';
-                  }}
+                  onClick={() => signOut({ callbackUrl: '/auth/login' })}
                   className='flex items-center gap-2 text-sm text-neutral-950 hover:underline'
                 >
                   <Image
@@ -144,7 +148,9 @@ export default function WritePostPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder='Enter your title'
-              className='mt-2 w-full rounded-xl border border-neutral-300 px-4 py-2 text-sm text-neutral-900 placeholder-neutral-500'
+              className={`mt-2 w-full rounded-xl border px-4 py-2 text-sm text-neutral-900 placeholder-neutral-500 ${
+                errors.title ? 'border-red-500' : 'border-neutral-300'
+              }`}
             />
           </div>
 
@@ -157,7 +163,9 @@ export default function WritePostPage() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder='Enter your content'
-              className='mt-2 h-[238px] w-full resize-none rounded-xl border border-neutral-300 px-4 py-2 text-sm text-neutral-900 placeholder-neutral-500'
+              className={`mt-2 h-[238px] w-full resize-none rounded-xl border px-4 py-2 text-sm text-neutral-900 placeholder-neutral-500 ${
+                errors.content ? 'border-red-500' : 'border-neutral-300'
+              }`}
             />
           </div>
 

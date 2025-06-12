@@ -1,11 +1,11 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from 'next-auth';
+import NextAuth, { type AuthOptions, type User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { login } from '@/lib/auth';
-import { UserPayload } from '@/types/auth';
+import { LoginResponse } from '@/types/auth';
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -13,29 +13,34 @@ const handler = NextAuth({
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials): Promise<UserPayload | null> {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const res = await login({
+          const res: LoginResponse = await login({
             email: credentials.email,
             password: credentials.password,
           });
 
-          // ✅ pastikan login() return UserPayload langsung
-          if (res?.token) {
-            return {
-              id: res.id,
-              name: res.name || res.email,
-              email: res.email,
-              image: res.image || null,
-              headline: res.headline || null,
-              bio: res.bio || null,
-              token: res.token,
-            };
-          }
+          if (!res?.token) return null;
 
-          return null;
+          const userRes = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/users/${credentials.email}`
+          );
+
+          if (!userRes.ok) return null;
+
+          const user = await userRes.json();
+
+          return {
+            id: user.id,
+            name: user.name || user.email,
+            email: user.email,
+            image: user.avatarUrl ?? undefined,
+            headline: user.headline ?? undefined,
+            bio: user.bio ?? undefined,
+            token: res.token,
+          };
         } catch (err) {
           console.error('Authorize error:', err);
           return null;
@@ -47,14 +52,13 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const u = user as UserPayload;
-        token.accessToken = u.token;
-        token.id = u.id;
-        token.name = u.name;
-        token.email = u.email;
-        token.picture = u.image;
-        token.headline = u.headline;
-        token.bio = u.bio;
+        token.accessToken = user.token;
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
+        token.headline = user.headline;
+        token.bio = user.bio;
       }
       return token;
     },
@@ -79,6 +83,7 @@ const handler = NextAuth({
     signIn: '/auth/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

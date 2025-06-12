@@ -1,3 +1,4 @@
+// app/providers.tsx
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -9,9 +10,14 @@ import { store } from '@/store/store';
 
 const queryClient = new QueryClient();
 
-export default function Providers({ children }: { children: ReactNode }) {
+interface Props {
+  children: ReactNode;
+  session: any; // atau bisa ketikkan session: Session | null jika sudah import dari 'next-auth'
+}
+
+export default function Providers({ children, session }: Props) {
   return (
-    <SessionProvider>
+    <SessionProvider session={session}>
       <ReduxProvider store={store}>
         <QueryClientProvider client={queryClient}>
           {children}
