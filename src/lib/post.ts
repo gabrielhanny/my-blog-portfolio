@@ -58,14 +58,12 @@ export async function addComment(
   return res.json();
 }
 
-// ✅ GET: Posts milik user yang sedang login
+
 export async function getMyPosts(token: string) {
-  const res = await fetch(`${BASE_URL}/posts`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/my-posts`, {
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    cache: 'no-store',
   });
 
   if (!res.ok) {
@@ -74,19 +72,24 @@ export async function getMyPosts(token: string) {
     throw new Error(error.message || 'Failed to fetch user posts');
   }
 
-  return res.json();
+  const result = await res.json();
+  return result.data; 
 }
 
-// GET: Comments for a post
-// export async function getPostComments(postId: number) {
-//   const res = await fetch(`${BASE_URL}/posts/${postId}/comments`);
-//   if (!res.ok) throw new Error('Failed to fetch comments');
-//   return res.json();
-// }
+export async function deletePost(id: number, token: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-// GET: Another posts
-// export async function getAnotherPosts() {
-//   const res = await fetch(`${BASE_URL}/posts/another-posts`);
-//   if (!res.ok) throw new Error('Failed to fetch another posts');
-//   return res.json();
-// }
+  if (!res.ok) {
+    throw new Error('Failed to delete post');
+  }
+}
+
+
+
+
+

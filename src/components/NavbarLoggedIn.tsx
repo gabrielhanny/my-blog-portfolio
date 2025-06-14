@@ -9,6 +9,9 @@ import { useDispatch } from 'react-redux';
 import { setSearchQuery } from '@/store/slices/searchSlice';
 import { AppDispatch } from '@/store/store';
 
+import { signOut } from 'next-auth/react';
+
+
 export default function NavbarLoggedIn() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [query, setQuery] = useState('');
@@ -112,7 +115,7 @@ export default function NavbarLoggedIn() {
                     />
                     Profile
                   </Link>
-                  <button
+                  {/* <button
                     onClick={() => {
                       document.cookie = 'token=; Max-Age=0';
                       window.location.href = '/login';
@@ -126,7 +129,14 @@ export default function NavbarLoggedIn() {
                       height={15}
                     />
                     Logout
-                  </button>
+                  </button> */}
+                  <button
+  onClick={() => signOut({ callbackUrl: '/auth/login' })}
+  className='flex items-center gap-2 text-sm text-neutral-950 hover:underline'
+>
+  <Image src='/icon/logout-icon.svg' alt='logout' width={17} height={15} />
+  Logout
+</button>
                 </div>
               )}
             </div>
