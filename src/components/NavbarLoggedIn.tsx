@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { setSearchQuery } from '@/store/slices/searchSlice';
 import { AppDispatch } from '@/store/store';
 
-import { signOut } from 'next-auth/react';
 
 
 export default function NavbarLoggedIn() {

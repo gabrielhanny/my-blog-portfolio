@@ -7,10 +7,12 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 import BlogCard from '@/components/BlogCard';
+import ChangePasswordForm from '@/components/ChangePasswordForm';
+import EditProfileDialog from '@/components/EditProfileDialog';
 import Footer from '@/components/Footer';
 import NavbarLoggedIn from '@/components/NavbarLoggedIn';
-import EditProfileDialog from '@/components/EditProfileDialog';
-import ChangePasswordForm from '@/components/ChangePasswordForm';
+
+
 
 import { getMyPosts } from '@/lib/post';
 

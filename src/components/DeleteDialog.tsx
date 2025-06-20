@@ -1,6 +1,9 @@
 
 'use client';
 
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/Button';
 import {
   Dialog,
   DialogContent,
@@ -9,9 +12,6 @@ import {
   DialogTitle,
   DialogClose,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/Button';
-import { X } from 'lucide-react';
-import { useState } from 'react';
 
 interface DeleteDialogProps {
   open: boolean;

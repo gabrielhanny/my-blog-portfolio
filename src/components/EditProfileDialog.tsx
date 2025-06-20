@@ -1,11 +1,11 @@
 
 'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface EditProfileDialogProps {
   open: boolean;

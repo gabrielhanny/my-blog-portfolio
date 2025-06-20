@@ -2,12 +2,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
+
 import { Button } from '@/components/ui/Button';
 
 const loginSchema = z.object({
@@ -30,21 +31,28 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginInput) => {
-    const res = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
+  const res = await signIn('credentials', {
+    email: data.email,
+    password: data.password,
+    redirect: false,
+    callbackUrl: '/',
+  });
 
-    if (res?.error) {
-  toast.error('Invalid credentials');
-} else {
-  toast.success('Login success!');
-  router.push('/');
-  router.refresh(); 
-}
+  if (!res) {
+    toast.error('Login failed. No response received.');
+    return;
+  }
 
-  };
+  if (res.error) {
+    toast.error('Invalid credentials');
+  } else {
+    toast.success('Login success!');
+    router.push(res.url || '/');
+    router.refresh();
+  }
+};
+
+
 
   return (
     <div className='mx-auto mt-24 w-[90%] max-w-[360px] rounded-[12px] border p-6 shadow-sm'>

@@ -1,5 +1,6 @@
 // src/lib/auth.ts
 import { LoginPayload, RegisterPayload, LoginResponse } from '@/types/auth';
+
 import { fetchAPI } from './api';
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {

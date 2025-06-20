@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
 
 export default function ChangePasswordForm() {
   const { data: session } = useSession();
